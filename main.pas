@@ -225,30 +225,30 @@ var
 
 begin
   Randomize;
-  helpvar := SHelp.Create(); //инициализация помощи
-  helpvar.DrawEnter();      //приветствие
+  helpvar := SHelp.Create(); //Help init
+  helpvar.DrawEnter();
   helpvar.DrawLN(2);
-  siph1 := SipherVelz.Create();
-  if (ParamCount = 0) then  begin//запуск без параметров
+  siph1 := SipherVelz.Create();//Sipher class init
+  if (ParamCount = 0) then  begin//if no params
     helpvar.AskOnStartNOPARAMS(ch);
     if(ch = 'e') then Halt(1);
-    helpvar.GetSTR(instr);   //строка
+    helpvar.GetSTR(instr); 
     helpvar.GetKEY(key);
   end //ключ
-  else if(ParamCount = 3) then begin//2 параметра - режим и строка и ключ 
-    ch := ParamStr(1)[1];               {потом добавить файлы!!!!!!!}
+  else if(ParamCount = 3) then begin//2 params: string and key 
+    ch := ParamStr(1)[1];               {file siphering will be aviable soon!!!!!!!}
     instr := ParamStr(2); end;
   
   siph1.TextIN := instr;
   if(Length(key) >= 4) then
     siph1.key := key else begin GenKey(key); siph1.key := key; writeln('NEW KEY:  ',key); end;
   
-  siph1.cutng(siph1.TextIN, siph1.key, siph1.key);//обрезание ключа под длину строки
+  siph1.cutng(siph1.TextIN, siph1.key, siph1.key);//calirating key to string size
   case (ch) of
     '1': begin outstr := (siph1.Incode(siph1.TextIN, siph1.key));  end;
     '2': begin outstr := (siph1.Decode(siph1.TextIN, siph1.key));  end;
     'e': Halt();
   end;
-  writeln('RESULT:   ',outstr);
+  writeln('RESULT:   ',outstr); //OUTPUT
   
 end.
