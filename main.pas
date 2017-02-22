@@ -21,17 +21,19 @@ type
     
     procedure GetSTR(var str: string);
     begin
+      write('STRING:   ');
       readln(str);
     end;
     
     procedure GetKEY(var str: string);
     begin
+      write('KEY:      ');
       readln(str);
     end;
     
     procedure AskOnStartNOPARAMS(var choise: char);
     begin
-      writeln('Print 1 to encrypt, 2 to decrypt, e to exit');
+      write('Print 1 to encrypt, 2 to decrypt, e to exit:   ');
       readln(choise);
       while ((choise <> '1') and (choise <> '2') and (choise <> 'e')) do
       begin
@@ -94,54 +96,56 @@ type
       for var i := 1 to ins.Length do tS += chr(ord(ins[i]) xor ord(key[i]));
       XCiph := ts;
     end;
-
-
- function ENBASE2_6(S: string): string;
- var i,a,x,b: Integer;
- begin
-   for i := 1 to Length(s) do
-   begin
-     x := Ord(s[i]);
-     b := b * (movCoef*2) + x;
-     a := a + 8;
-     while a >= 6 do
-     begin
-       a := a - 6;
-       x := b div (1 shl a);
-       b := b mod (1 shl a);
-       Result := Result + Codes64[x + 1];
-     end;
-   end;
-   if a > 0 then
-   begin
-     x := b shl (6 - a);
-     Result := Result + Codes64[x + 1];
-   end;
- end;
-
- function OUTBASE2_6(S: string): string;
- var i,a,x,b: Integer;
- begin
-   for i := 1 to Length(s) do
-   begin
-     x := Pos(s[i], codes64) - 1;
-     if x >= 0 then
-     begin
-       b := b * 64 + x;
-       a := a + 6;
-       if a >= 8 then
-       begin
-         a := a - 8;
-         x := b shr a;
-         b := b mod (1 shl a);
-         x := x mod (movCoef*2);
-         Result := Result + chr(x);
-       end;
-     end
-     else
-       exit;
-   end;
- end;
+    
+    
+    function ENBASE2_6(S: string): string;
+    var
+      i, a, x, b: Integer;
+    begin
+      for i := 1 to Length(s) do
+      begin
+        x := Ord(s[i]);
+        b := b * (movCoef * 2) + x;
+        a := a + 8;
+        while a >= 6 do
+        begin
+          a := a - 6;
+          x := b div (1 shl a);
+          b := b mod (1 shl a);
+          Result := Result + Codes64[x + 1];
+        end;
+      end;
+      if a > 0 then
+      begin
+        x := b shl (6 - a);
+        Result := Result + Codes64[x + 1];
+      end;
+    end;
+    
+    function OUTBASE2_6(S: string): string;
+    var
+      i, a, x, b: Integer;
+    begin
+      for i := 1 to Length(s) do
+      begin
+        x := Pos(s[i], codes64) - 1;
+        if x >= 0 then
+        begin
+          b := b * 64 + x;
+          a := a + 6;
+          if a >= 8 then
+          begin
+            a := a - 8;
+            x := b shr a;
+            b := b mod (1 shl a);
+            x := x mod (movCoef * 2);
+            Result := Result + chr(x);
+          end;
+        end
+        else
+          exit;
+      end;
+    end;
     
     
     
@@ -205,10 +209,11 @@ type
 {----------------------------------------------------------------------------------------------------------------------------------------}
 
 
-procedure GenKey(var key1:string);
-var i:integer;
+procedure GenKey(var key1: string);
+var
+  i: integer;
 begin
-for i:=1 to 8 do key1[i]:=Chr(Random(30,200));
+  for i := 1 to 8 do key1:= key1 + Chr(Random(30, 128));
 end;
 
 
@@ -219,31 +224,31 @@ var
   instr, key, outstr: string;
 
 begin
-Randomize;
-  helpvar := SHelp.Create(); //help init
-  helpvar.DrawEnter();      //draw welcome
+  Randomize;
+  helpvar := SHelp.Create(); //инициализация помощи
+  helpvar.DrawEnter();      //приветствие
   helpvar.DrawLN(2);
   siph1 := SipherVelz.Create();
-  if (ParamCount = 0) then  begin//if no params
+  if (ParamCount = 0) then  begin//запуск без параметров
     helpvar.AskOnStartNOPARAMS(ch);
     if(ch = 'e') then Halt(1);
-    helpvar.GetSTR(instr);
+    helpvar.GetSTR(instr);   //строка
     helpvar.GetKEY(key);
   end //ключ
-  else if(ParamCount = 3) then begin//2 params - string and key 
-    ch := ParamStr(1)[1];               {files will be aviable soon!!!!!!!}
+  else if(ParamCount = 3) then begin//2 параметра - режим и строка и ключ 
+    ch := ParamStr(1)[1];               {потом добавить файлы!!!!!!!}
     instr := ParamStr(2); end;
   
   siph1.TextIN := instr;
-  if(Length(key)>=4) then
-  siph1.key := key else begin GenKey(key); siph1.key:=key; writeln(siph1.key); end;
+  if(Length(key) >= 4) then
+    siph1.key := key else begin GenKey(key); siph1.key := key; writeln('NEW KEY:  ',key); end;
   
-  siph1.cutng(siph1.TextIN, siph1.key, siph1.key);//calibrating the key to the string
+  siph1.cutng(siph1.TextIN, siph1.key, siph1.key);//обрезание ключа под длину строки
   case (ch) of
     '1': begin outstr := (siph1.Incode(siph1.TextIN, siph1.key));  end;
     '2': begin outstr := (siph1.Decode(siph1.TextIN, siph1.key));  end;
     'e': Halt();
   end;
-  writeln(outstr);
+  writeln('RESULT:   ',outstr);
   
 end.
